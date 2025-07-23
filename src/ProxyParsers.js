@@ -17,6 +17,7 @@ export class ProxyParser {
         return HttpParser.parse(url, userAgent);
       case 'trojan': return new TrojanParser().parse(url);
       case 'tuic': return new TuicParser().parse(url);
+      case 'socks5': return new Socks5Parser().parse(url);
 		}
 	}
 	}
@@ -268,4 +269,33 @@ export class ProxyParser {
                 return null;
             }
         }
+    }
+
+    class Socks5Parser {
+      parse(url) {
+        const { addressPart, params, name } = parseUrlParams(url);
+        const [userinfo, serverInfo] = addressPart.split('@');
+        const { host, port } = parseServerInfo(serverInfo || addressPart);
+        
+        let username, password;
+        
+        // 处理认证信息，如果有的话
+        if (userinfo && serverInfo) {
+          const authParts = decodeURIComponent(userinfo).split(':');
+          username = authParts[0];
+          password = authParts[1];
+        }
+        
+        
+        return {
+          tag: name || `Socks5-${host}`,
+          type: "socks5",
+          server: host,
+          server_port: port,
+          username: username || undefined,
+          password: password || undefined,
+          tcp_fast_open: false,
+          udp: params.udp === 'true' || params.udp === '1' || false
+        };
+      }
     }

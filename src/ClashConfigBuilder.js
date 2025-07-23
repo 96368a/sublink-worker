@@ -50,6 +50,19 @@ export class ClashConfigBuilder extends BaseConfigBuilder {
                         headers: proxy.transport.headers
                     } : undefined
                 };
+            case 'socks5':
+                return {
+                    name: proxy.tag,
+                    type: 'socks5',
+                    server: proxy.server,
+                    port: proxy.server_port,
+                    username: proxy.username,
+                    password: proxy.password,
+                    tls: proxy.tls?.enabled || false,
+                    'skip-cert-verify': proxy.tls?.insecure,
+                    sni: proxy.tls?.server_name || '',
+                    udp: proxy.udp || false
+                };
             case 'vless':
                 return {
                     name: proxy.tag,

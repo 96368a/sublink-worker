@@ -34,6 +34,24 @@ export class SurgeConfigBuilder extends BaseConfigBuilder {
             case 'shadowsocks':
                 surgeProxy = `${proxy.tag} = ss, ${proxy.server}, ${proxy.server_port}, encrypt-method=${proxy.method}, password=${proxy.password}`;
                 break;
+            case 'socks5':
+                surgeProxy = `${proxy.tag} = socks5, ${proxy.server}, ${proxy.server_port}`;
+                if (proxy.username && proxy.password) {
+                    surgeProxy += `, username=${proxy.username}, password=${proxy.password}`;
+                }
+                if (proxy.tls?.enabled) {
+                    surgeProxy += ', tls=true';
+                    if (proxy.tls.server_name) {
+                        surgeProxy += `, sni=${proxy.tls.server_name}`;
+                    }
+                    if (proxy.tls.insecure) {
+                        surgeProxy += ', skip-cert-verify=true';
+                    }
+                }
+                if (proxy.udp) {
+                    surgeProxy += ', udp-relay=true';
+                }
+                break;
             case 'vmess':
                 surgeProxy = `${proxy.tag} = vmess, ${proxy.server}, ${proxy.server_port}, username=${proxy.uuid}`;
                 if (proxy.alter_id == 0) {
